@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <title>Smart Recipe Generator</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  <h1>Smart Recipe Generator</h1>
+
+  <div class="controls">
+    <label>Enter ingredients (comma-separated):</label><br/>
+    <input type="text" id="ingredientInput" placeholder="e.g., tomato, rice, onion" style="width:300px"/>
+    <button id="searchBtn">Find Recipes</button>
+  </div>
+
+  <div class="controls" style="overflow: hidden;">
+    <label  style="padding-right: 20px;">Sort by:
+      <select id="sortOption">
+        <option value="">None</option>
+        <option value="timeAsc">Cooking Time ↑</option>
+        <option value="timeDesc">Cooking Time ↓</option>
+        <option value="difficulty">Difficulty</option>
+      </select>
+    </label>
+
+    <label style="padding-right: 20px;">Dietary:
+      <select id="dietFilter">
+        <option value="">All</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="non-vegetarian">Non-Vegetarian</option>
+        <option value="vegan">Vegan</option>
+      </select>
+    </label>
+
+    <button id="applyFilter">Apply</button>
+  </div>
+
+  <h2>Suggested Recipes:</h2>
+  <div id="recipes"></div>
+
+  <script>
+    let lastResults = [];
+
+    function renderRecipes(recipes) {
+      const recipesDiv = document.getElementById("recipes");
+      recipesDiv.innerHTML = "";
+      if (!recipes || recipes.length === 0) {
+        recipesDiv.innerHTML = "<p>No matching recipes found.</p>";
+        return;
+      }
+      recipes.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "recipe-card";
+        card.innerHTML = `
+          <h3>${r.name}</h3>
+          <p><b>Ingredients:</b> ${r.ingredients.join(", ")}</p>
+          <p><b>Steps:</b></p>
+          <ul>${r.steps.map(s => `<li>${s}</li>`).join("")}</ul>
+          <p><b>Nutrition:</b> ${r.nutrition.calories} cal, ${r.nutrition.protein}g protein</p>
+          <p class="muted">Difficulty: ${r.difficulty} | Time: ${r.cookingTime} mins | Dietary: ${r.dietary}</p>
+        `;
+        recipesDiv.appendChild(card);
+      });
+    }
+
+    
+    document.getElementById("searchBtn").addEventListener("click", async () => {
+      const input = document.getElementById("ingredientInput").value;
+      if (!input.trim()) return alert("Enter some ingredients first!");
+      const ingredients = input.split(",").map(i => i.trim());
+
+      const res = await fetch("/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients })
+      });
+      const data = await res.json();
+      lastResults = data.recipes || [];
+      renderRecipes(lastResults);
+    });
+
+    
+    document.getElementById("applyFilter").addEventListener("click", () => {
+      let results = [...lastResults];
+      const sortOption = document.getElementById("sortOption").value;
+      const dietFilter = document.getElementById("dietFilter").value;
+
+    
+      if (dietFilter) {
+        results = results.filter(r => r.dietary.toLowerCase() === dietFilter);
+      }
+
+    
+      if (sortOption === "timeAsc") {
+        results.sort((a, b) => a.cookingTime - b.cookingTime);
+      } else if (sortOption === "timeDesc") {
+        results.sort((a, b) => b.cookingTime - a.cookingTime);
+      } else if (sortOption === "difficulty") {
+        const order = { easy: 1, medium: 2, hard: 3 };
+        results.sort((a, b) => order[a.difficulty] - order[b.difficulty]);
+      }
+
+      renderRecipes(results);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+ 
+  * {
+  box-sizing: border-box;
+}
+
+#ingredientInput {
+  width: 100% !important;
+  max-width: 100%; 
+  margin-top: 0px;
+}
+
+  body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+    background:#f9f9f9; 
+  }
+  h1 { 
+    color:#333; 
+    text-align: center;
+  }
+  .controls { 
+    margin: 15px 0; 
+    padding:10px; 
+    background:#fff; 
+    border:1px solid #ccc; 
+    border-radius:8px; 
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  input, select, button { 
+    margin:5px; 
+    padding:6px 10px; 
+    border-radius:5px; 
+    border:1px solid #bbb; 
+    flex: 1;
+    min-width: 150px;
+  }
+  button { 
+    background:#007BFF; 
+    color:#fff; 
+    cursor:pointer; 
+    border:none; 
+    flex: none;
+  }
+  button:hover { 
+    background:#0056b3; 
+  }
+  .recipe-card { 
+    background:#fff; 
+    border:1px solid #ddd; 
+    padding: 15px; 
+    margin: 10px 0; 
+    border-radius: 8px; 
+    box-shadow:0 1px 3px rgba(0,0,0,0.1); 
+  }
+  .recipe-card h3 { 
+    margin: 0 0 5px; 
+    color:#444; 
+  }
+  .muted { 
+    color:#666; 
+    font-size:14px; 
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    body {
+      margin: 10px;
+    }
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    input, select, button {
+      width: 100%;
+      flex: none;
+    }
+    #ingredientInput {
+      width: 100% !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 20px;
+    }
+    .recipe-card {
+      padding: 10px;
+    }
+    .recipe-card h3 {
+      font-size: 18px;
+    }
+  }
