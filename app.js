@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const path = require("path");
+const Tesseract = require("tesseract.js");
 
 const app = express();
 const recipes = [
@@ -230,34 +230,67 @@ const recipes = [
     "dietary": "non-vegetarian"
   }
 ]
-
-
 app.use(bodyParser.json());
-app.use(express.static("public")); 
+app.use(express.static("public"));
+app.use(
+  bodyParser.raw({ type: "image/*", limit: "10mb" })
+);
 
-function matchRecipes(userIngredients) {
-  const ing = userIngredients.map(i => i.toLowerCase().trim());
+// ===== Helper: Clean OCR text =====
+function parseIngredients(text) {
+  return text
+    .replace(/[^a-zA-Z0-9,\n\s]/g, "")  // remove special characters
+    .split(/\n|,|;/)
+    .map(i => i.toLowerCase().trim())
+    .filter(Boolean);
+}
+
+// ===== Match Recipes =====
+function matchRecipes(userIngredientsText) {
+  const userIngredients = parseIngredients(userIngredientsText);
 
   return recipes
     .map(r => {
-      const overlap = r.ingredients.filter(x => ing.includes(x.toLowerCase()));
+      const overlap = r.ingredients.filter(x =>
+        userIngredients.includes(x.toLowerCase())
+      );
       return { ...r, score: overlap.length };
     })
-    .filter(r => r.score > 0) 
-    .sort((a, b) => b.score - a.score); 
+    .filter(r => r.score > 0)
+    .sort((a, b) => b.score - a.score);
 }
 
+// ===== Endpoint: OCR Image =====
+app.post("/analyze", async (req, res) => {
+  try {
+    const imageData = req.body;
+    if (!imageData || !imageData.length) {
+      return res.status(400).json({ error: "No image provided" });
+    }
+
+    const { data: { text } } = await Tesseract.recognize(imageData, "eng", {
+      logger: m => console.log(m)
+    });
+   
+    const matches = matchRecipes(text);
+    res.json({ text, recipes: matches });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ===== Endpoint: Manual Search =====
 app.post("/search", (req, res) => {
   const { ingredients } = req.body;
-
   if (!ingredients || ingredients.length === 0) {
     return res.status(400).json({ error: "No ingredients provided" });
   }
 
-  const matches = matchRecipes(ingredients);
+  const matches = matchRecipes(ingredients.join(","));
   res.json({ recipes: matches });
 });
+
+// ===== Start Server =====
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(` Smart Recipe Generator running at http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
