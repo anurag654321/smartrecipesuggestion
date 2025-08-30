@@ -2,7 +2,16 @@
   * {
   box-sizing: border-box;
 }
+.allrt{
+      animation: blink 4s infinite ease-in-out;
+    }
 
+    @keyframes blink {
+       0%   { opacity: 1; }   
+      10%  { opacity: 0; }  
+      20%  { opacity: 1; }   
+      100% { opacity: 1; }  
+    }
 #ingredientInput {
   width: 100% !important;
   max-width: 100%; 
@@ -22,7 +31,8 @@
     margin: 15px 0; 
     padding:10px; 
     background:#fff; 
-    border:1px solid #ccc; 
+    border:1px solid #a19c9c;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
     border-radius:8px; 
     display: flex;
     flex-direction: column;
@@ -31,7 +41,7 @@
     align-items: center;
   }
   input, select, button { 
-    margin:5px; 
+    /* margin:5px;  */
     padding:6px 10px; 
     border-radius:5px; 
     border:1px solid #bbb; 
@@ -50,7 +60,7 @@
   }
   .recipe-card { 
     background:#fff; 
-    border:1px solid #ddd; 
+    border:1px solid #939393; 
     padding: 15px; 
     margin: 10px 0; 
     border-radius: 8px; 
@@ -94,3 +104,21 @@
       font-size: 18px;
     }
   }
+
+   .heading {
+      font-size: 30px;
+      opacity: 0;
+      transform: translateX(-100%); /* Start from left side */
+      animation: slideIn 2s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }

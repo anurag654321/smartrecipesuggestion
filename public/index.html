@@ -9,16 +9,17 @@
 </head>
 <body>
 
-<h1>Smart Recipe Generator</h1>
+<h1 class="heading" style="color: black;">Smart Recipe Generator</h1>
 
-<div class="controls">
-  <h3>Upload an Image of Ingredients</h3>
+<div class="controls upload">
+  <h3 style="margin: 0px;">Upload an Image of Ingredients</h3>
+  <p style="margin: 0px; color:rgb(109, 109, 109)" class="allrt">Don't upload handwritten text</p>
   <input type="file" id="fileInput" accept="image/*" />
   <button onclick="uploadImage()">Upload & Analyze</button>
 </div>
 
 <div class="controls">
-  <h3>Enter ingredients (comma-separated):</h3>
+  <h3 style="margin: 0px;">Enter ingredients (comma-separated):</h3>
   <input type="text" id="ingredientInput" placeholder="e.g., tomato, rice, onion" style="width:300px" />
   <button id="searchBtn">Find Recipes</button>
 </div>
