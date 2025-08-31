@@ -40,7 +40,6 @@ ________________________________________________________________________________
 - Displays suggested recipes based on the backend response.
 
 ### 4. Security & Cleanliness
-- Uploaded images are stored in an `uploads/` directory, which is gitignored.
 - Sensitive files like `.env` and service account keys are also gitignored.
 
 ### 5. Extensibility
